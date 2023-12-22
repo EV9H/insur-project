@@ -1,0 +1,212 @@
+CREATE TABLE Customer
+(   Fname              varchar(18),
+    Lname              varchar(18),
+    Mname              varchar(18),
+    Age                int,
+    Ssn                varchar(18)  NOT NULL,
+    Gender             TINYINT(1),
+    Active             TINYINT(1),
+    Suffix             varchar(18),
+    Income             int,
+    Health_rating      int,
+    Married            TINYINT(1),
+    Purchased          TINYINT(1),
+    PRIMARY KEY (Ssn)
+);
+
+CREATE TABLE Account
+( 
+    AccID              varchar(18)  NOT NULL,
+    Password           varchar(18),
+    Email              varchar(18),
+    TaxID              varchar(18),
+    GroupNum           int,
+    AccCity            varchar(18),
+    Active             TINYINT(1),
+    AccCompany         varchar(18),
+    AccName            varchar(18),
+    PRIMARY KEY (AccID)
+);
+
+CREATE TABLE Account_owner
+( 
+    Active             TINYINT(1),
+    Suspend            TINYINT(1),
+    Priority           TINYINT(1),
+    CustFname          varchar(18),
+    CustLname          varchar(18),
+    CustMname          varchar(18),
+    City               varchar(18),
+    State              varchar(18),
+    Country            varchar(18),
+    Zip                varchar(18),
+    Ssn                varchar(18)  NOT NULL,
+    AccID              varchar(18)  NOT NULL,
+    PRIMARY KEY (Ssn, AccID),
+    FOREIGN KEY (Ssn) REFERENCES Customer(Ssn),
+    FOREIGN KEY (AccID) REFERENCES Account(AccID)
+);
+
+CREATE TABLE Billing_Account
+( 
+    Loc_Address1       varchar(18),
+    Loc_Address2       varchar(18),
+    Card               varchar(18),
+    Bill_Address1      varchar(18),
+    Bill_Address2      varchar(18),
+    Bill_Zip           varchar(18),
+    Loc_City           varchar(18),
+    Loc_State          varchar(18),
+    BankAcc            varchar(18),
+    Name_on_Acc        varchar(18),
+    Bank               varchar(18),
+    Acc_type           varchar(18),
+    Active             TINYINT(1),
+    AccID              varchar(18)  NOT NULL,
+    PRIMARY KEY (AccID),
+    FOREIGN KEY (AccID) REFERENCES Account(AccID)
+);
+
+CREATE TABLE BenefitType
+( 
+    BenefitType        varchar(18)  NOT NULL,
+    BenefitPercentage  varchar(18),
+    DurationOfPayment  varchar(18),
+    PRIMARY KEY (BenefitType)
+);
+
+CREATE TABLE Region
+( 
+    Region_Id          varchar(18)  NOT NULL,
+    Region_Name        varchar(18),
+    PRIMARY KEY (Region_Id)
+);
+
+CREATE TABLE Manager
+( 
+    Manager_Ssn        varchar(18)  NOT NULL,
+    Fname              varchar(18),
+    Lname              varchar(18),
+    Region_Id          varchar(18),
+    PRIMARY KEY (Manager_Ssn),
+    FOREIGN KEY (Region_Id) REFERENCES Region(Region_Id)
+);
+
+CREATE TABLE License
+( 
+    Lic_id             varchar(18)  NOT NULL,
+    Start_Date         varchar(18),
+    Valid_Thru         varchar(18),
+    Type               varchar(18),
+    PRIMARY KEY (Lic_id)
+);
+
+CREATE TABLE Associate
+( 
+    Assc_Ssn           varchar(18)  NOT NULL,
+    Fname              varchar(18),
+    Lname              varchar(18),
+    Manager_Ssn        varchar(18),
+    Coord_Ssn          varchar(18),
+    Lic_id             varchar(18),
+    Region_Id          varchar(18),
+    PRIMARY KEY (Assc_Ssn),
+    FOREIGN KEY (Manager_Ssn) REFERENCES Manager(Manager_Ssn),
+    FOREIGN KEY (Lic_id) REFERENCES License(Lic_id),
+    FOREIGN KEY (Region_Id) REFERENCES Region(Region_Id)
+);
+
+CREATE TABLE PremiumType
+( 
+    PremiumType        varchar(18)  NOT NULL,
+    PaymentInterval    varchar(18),
+    Price              varchar(18),
+    PRIMARY KEY (PremiumType)
+);
+
+CREATE TABLE Plan
+( 
+    Plan_Name          varchar(18)  NOT NULL,
+    PremiumType        varchar(18),
+    BenefitType        varchar(18),
+    PRIMARY KEY (Plan_Name),
+    FOREIGN KEY (PremiumType) REFERENCES PremiumType(PremiumType),
+    FOREIGN KEY (BenefitType) REFERENCES BenefitType(BenefitType)
+);
+
+CREATE TABLE Contract
+( 
+    Amount             int,
+    Status             TINYINT(1),
+    Assc_Ssn           varchar(18),
+    Plan_Name          varchar(18),
+    Coord_Ssn          varchar(18),
+    CID                varchar(18)  NOT NULL,
+    AccID              varchar(18),
+    PRIMARY KEY (CID),
+    FOREIGN KEY (Assc_Ssn) REFERENCES Associate(Assc_Ssn),
+    FOREIGN KEY (Plan_Name) REFERENCES Plan(Plan_Name),
+    FOREIGN KEY (AccID) REFERENCES Account(AccID)
+);
+
+CREATE TABLE ContractBenefit
+( 
+    BenefitCode        varchar(18)  NOT NULL,
+    BenefitType        varchar(18),
+    InvokedStatus      varchar(18),
+    Amount             varchar(18),
+    CID                varchar(18),
+    PRIMARY KEY (BenefitCode),
+    FOREIGN KEY (BenefitType) REFERENCES BenefitType(BenefitType),
+    FOREIGN KEY (CID) REFERENCES Contract(CID)
+);
+
+CREATE TABLE ContractPremium
+( 
+    PremiumCode        varchar(18)  NOT NULL,
+    AnnualizedPremium  varchar(18),
+    PremiumType        varchar(18),
+    PaymentStatus      varchar(18),
+    CID                varchar(18),
+    PRIMARY KEY (PremiumCode),
+    FOREIGN KEY (PremiumType) REFERENCES PremiumType(PremiumType),
+    FOREIGN KEY (CID) REFERENCES Contract(CID)
+);
+
+CREATE TABLE Customer_Address
+( 
+    Fname              varchar(18),
+    Lname              varchar(18),
+    Mname              varchar(18),
+    Country            varchar(18),
+    City               varchar(18),
+    State              varchar(18),
+    Address1           varchar(18),
+    Address2           varchar(18),
+    Ssn                varchar(18)  NOT NULL,
+    PRIMARY KEY (Ssn),
+    FOREIGN KEY (Ssn) REFERENCES Customer(Ssn)
+);
+
+CREATE TABLE Customer_Contact
+( 
+    Phone              varchar(18),
+    Email              varchar(18),
+    Alter_phone        varchar(18),
+    Ssn                varchar(18)  NOT NULL,
+    PRIMARY KEY (Ssn),
+    FOREIGN KEY (Ssn) REFERENCES Customer(Ssn)
+);
+
+CREATE TABLE Customer_Relation
+( 
+    Fname              varchar(18),
+    Lname              varchar(18),
+    Mname              varchar(18),
+    Age                int,
+    Gender             TINYINT(1),
+    CRelation          varchar(18),
+    CSsn               varchar(18)  NOT NULL,
+    PRIMARY KEY (CSsn),
+    FOREIGN KEY (CSsn) REFERENCES Customer(Ssn)
+);
