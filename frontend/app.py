@@ -65,6 +65,7 @@ class SignupForm(Form):
     name = StringField("name")
     password = StringField("Password")
     email = StringField("Email")
+    ssn = StringField("Ssn")
 
 ########### AUTHENTICATIONS ###################
 def auth(account, password, role = "Customer"):
@@ -112,6 +113,7 @@ def signup():
         password = signupForm.password.data
         name = signupForm.name.data 
         email = signupForm.email.data
+        ssn = signupForm.ssn.data
         active = 1
         qs = QuerySender()
         query = "SELECT AccID, Password FROM Account WHERE AccID = %s AND Password = %s"
@@ -123,7 +125,10 @@ def signup():
                 INSERT INTO Account (AccID, Password, Email, Active, AccName)
                 VALUES (%s, %s, %s, %s, %s)
             """
-            result2 = qs.execute(query, (str(account), str(password), str(email), str(active), str(name)))
+            result2 = qs.execute(query, (str(account), str(password), str(email), str(active), str(name)), auto_close=False)
+            
+            qs.execute("""INSERT INTO Customer(Fname, Ssn) VALUES(%s,%s)""", params=(name, ssn), auto_close=False)
+            qs.execute("""INSERT INTO Account_owner(Ssn, AccID) VALUES(%s,%s)""", params=(ssn, account))
             qs.close()
             
             # RETRAIN 
@@ -175,29 +180,70 @@ def get_quote():
             return r
 
         quote = int(calculate_premium(age, gender, income, health_rating, married)/12)
+        session['quote_info'] = [age, gender, income, health_rating, married, purchased]
         session['quote'] = quote
     return render_template('get_quote.html', form=form, quote = quote)
 
 
 @app.route('/purchase', methods=['GET', 'POST'])
 def purchase():
+    quote_info = session['quote_info']
     quote = session['quote']
-    
     pForm = PurchaseForm(request.form)
-    pForm.plan.data = 'planA'
-    # PFORM
-    # planSelected = pForm.plan.data 
-    # if planSelected == 'planB':
-    #     quote = int(quote * 1.5)
-    # elif planSelected == 'planC':
-    #     quote = int(quote*2)
+    # pForm.plan.data = 'planA'
+    msg = ''
     if request.method == 'POST' and pForm.validate():
         plan = pForm.plan.data
+<<<<<<< Updated upstream
         # amount = pForm.amount.data
 
+=======
+        app.logger.debug(plan)
+        planname = ""
+        if plan == "planA":
+            planname = "Plan A"
+        elif plan == "planB":
+            planname = "Plan B"
+        else:
+            planname = "Plan C"
+        userID = session['AccID']
+        quote_info.append(userID)
+
+
+       
+        db = pymysql.connect(
+            host='insurance-database.cdcuzzna0mo5.us-east-2.rds.amazonaws.com',
+            user='admin',
+            password='12345678',
+            port = 3306,
+            database="insdb"
+        )
+        cursor = db.cursor()
+        q = """
+            UPDATE Customer
+            SET Age = %s,Gender = %s, Income= %s, Health_rating= %s, Married= %s, Purchased = %s
+            WHERE Customer.Ssn = (
+                SELECT Account_owner.Ssn FROM Account_owner
+                WHERE Account_owner.AccID = %s
+            )
+        """
+        cursor.execute(q, quote_info)
+        cursor.execute("""SELECT MAX(CAST(CID AS UNSIGNED))  FROM Contract""")
+        CID = str(int(cursor.fetchall()[0][0])+ 1)
+        # app.logger.debug(CID)
+        q = """
+            INSERT INTO Contract(CID, Amount, Status, Assc_Ssn, Plan_Name, AccID)
+            VALUES(%s, %s,%s,%s,%s,%s)
+        """
+        cursor.execute(q, [CID, quote, 1, '111-11-1111', planname, userID])
+>>>>>>> Stashed changes
         
         
-    return render_template('purchase.html', pForm = pForm, quote = quote)
+        cursor.close()
+        db.commit()
+        db.close()
+        msg = "Purchase successful! You can see your order in My Products page."
+    return render_template('purchase.html', pForm = pForm, quote = quote, quote_info = quote_info, msg = msg)
 
 
 ########### MY PRODUCTS #####################

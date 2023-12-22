@@ -231,7 +231,30 @@ q = '''SELECT CID, Plan_Name, Status, Amount, Assc_Ssn FROM Contract
             INNER JOIN Account ON Account.AccID = Contract.AccID
             WHERE Contract.AccID = 132059
         '''
-cursor.execute(q)
+        
+        
+q =  '''SELECT * FROM Customer C
+        INNER JOIN Account_owner AO ON AO.Ssn = C.Ssn
+        WHERE AO.AccID = %s
+'''
+
+# q = """
+#     UPDATE Customer 
+#     SET Age = 123
+#     WHERE Customer.Ssn = (
+#         SELECT Account_owner.Ssn FROM Account_owner
+#         WHERE Account_owner.AccID = %s
+#     )
+
+# """
+
+
+q =  '''SELECT * FROM Contract
+        WHERE AccID = %s
+'''
+
+# q = """SELECT MAX(CAST(CID AS UNSIGNED))  FROM Contract"""
+cursor.execute(q, 'test12345')
 print(cursor.fetchall())
 
 db.commit()
