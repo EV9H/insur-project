@@ -283,6 +283,7 @@ def my_products():
 # frontend required
 @app.route('/assess', methods=['GET', 'POST'])
 def assess():
+    train_knn()
     form = AssessmentForm(request.form)
     
     msg = 'Fill all related customer info and wait for Result ...'
