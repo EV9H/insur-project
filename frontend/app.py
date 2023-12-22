@@ -75,6 +75,9 @@ class AssessmentForm(Form):
     married = BooleanField('Married')
     purchased = BooleanField('Purchased Before?')
 
+class CustomerIDForm(Form):
+    AccID = StringField("Account ID")
+
 ########### AUTHENTICATIONS ###################
 def auth(account, password, role = "Customer"):
     if account == "admin" and password == "12345":
@@ -279,6 +282,42 @@ def my_products():
         return render_template('my_products.html', products = products)
     else: 
         return redirect('/login')
+
+@app.route('/get_contract', methods=['GET', 'POST'])
+def get_contract():
+    products = []
+    msg = ""
+    form = CustomerIDForm(request.form)
+    if request.method == 'POST' and form.validate():
+        
+        userID = form.AccID.data
+        qs = QuerySender()
+        q = '''SELECT CID, Plan_Name, Status, Amount, Assc_Ssn FROM Contract 
+            INNER JOIN Account ON Account.AccID = Contract.AccID
+            WHERE Contract.AccID = %s
+        '''
+        data = qs.execute(q, params=(userID))
+        
+        if data:
+            for i in range(len(data)):
+                CID = data[i][0]
+                name = data[i][1]
+                status = data[i][2]
+                amount = data[i][3]
+                assc = data[i][4]
+                            
+                products.append({
+                    'CID': CID,
+                    'name': name,
+                    'payment': amount,
+                    'status':status,
+                    'assc': assc
+                })
+        else: 
+            msg = "No account/Contract in database"
+    return render_template('get_contract.html', form = form, products = products,msg = msg)
+
+
 
 # frontend required
 @app.route('/assess', methods=['GET', 'POST'])

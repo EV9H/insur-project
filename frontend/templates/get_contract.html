@@ -1,0 +1,88 @@
+{% extends 'bootstrap/base.html' %}
+{% block title %}JZIB Insurance Company{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+        .navbar-item {
+            display: flex;
+        }
+
+        .  {
+            margin-left: auto;
+        }
+        a, a:hover {
+            text-decoration: none;
+            color:white;
+        }
+        p{
+            font-size: 18px;
+        }
+        
+        #header{
+            border-style: solid;
+            border-color: white; 
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        
+        .login-button{
+            border-style: solid;
+            border-color: white;
+            background: black;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<nav class="navbar">
+    <div class="container " style="">
+        <a href = "/"> <h1 class = "text-center" id = "header"> JZIB Insurance</h1></a>
+    </div>
+</nav>
+<div class="container" style="">
+    <body>
+        <div class="container">
+          <h2>Search by Customer Account ID</h2>
+          <form method="POST" action="{{ url_for('get_contract')}}">
+
+            <div class="form-group">
+                {{ form.AccID.label }}
+                {{ form.AccID(class="form-control black-and-white ") }}
+            </div>
+            <button type="submit" class="btn btn-SECOND btn-lg btn-block login-button">Search</button>
+            <p> {{msg}}</p>
+          </form>
+
+          <table class="table" style = "margin-top: 100px;">
+            <thead>
+              <tr>
+                <th>Contract ID</th>
+                <th>Product Name</th>
+                <th>$/month</th>
+                <th>Associate</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+              <tr>
+                <td>{{ product.CID }}</td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.payment }}</td>
+                <td>{{ product.assc }}</td>
+                <td>{{ product.status }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </body>
+   
+</div>
+{% endblock %}
