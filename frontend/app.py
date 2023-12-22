@@ -210,8 +210,10 @@ def purchase():
             planname = "Plan A"
         elif plan == "planB":
             planname = "Plan B"
+            quote *= 1.5
         else:
             planname = "Plan C"
+            quote *= 2
         userID = session['AccID']
         quote_info.append(userID)
 
