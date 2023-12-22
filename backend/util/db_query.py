@@ -12,8 +12,8 @@ class QuerySender:
         
         self.cursor = self.db.cursor()
     
-    def excute(self,query, show_result = False, auto_close = True):
-        self.cursor.excute(query)
+    def execute(self, query, params=None, show_result=True, auto_close=True):
+        self.cursor.execute(query, params)
         if show_result:
             return self.cursor.fetchall()
         

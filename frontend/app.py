@@ -13,6 +13,7 @@ bootstrap = Bootstrap(app)
 import os
 sys.path.insert(0, os.path.abspath('../'))
 from backend.api import *
+from backend.util.db_query import *
 
 
 
@@ -79,17 +80,15 @@ def login():
     if request.method == 'POST' and loginForm.validate():
         app.logger.debug("A debug message 2 " )
         account = loginForm.account.data
-        password = loginForm.password.data    
-        if auth(account,password):
+        password = loginForm.password.data
+        qs = QuerySender()
+        query = "SELECT AccID, Password FROM Account WHERE AccID = %s AND Password = %s"
+        result = qs.execute(query, params=(str(account), str(password)))
+        if result:
             session["LOGGED_IN"] = True
-
             return redirect("/")
         else:
-            msg = "Wrong credentials. (admin, 12345)"
-            
-            
-        # LOGIN VALIDATIONS.... 
-    
+            msg = "Wrong credentials."
     return render_template('login.html', loginForm=loginForm, msg = msg)
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -97,6 +96,29 @@ def logout():
     session.pop("LOGGED_IN", None)
     
     return redirect("/")
+
+# front-end for sign-up: account password email Accname Active = 1
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    account = "test2"
+    password = "23456"
+    email = "abc@gmail.com"
+    acc_name = "Evan Huang"
+    active = 1
+    qs = QuerySender()
+    query = "SELECT AccID FROM Account WHERE AccID = %s"
+    result = qs.execute(query, params=(str(account)), auto_close=False)
+    if result:
+        print("AccID already exists")
+    else:
+        query = """
+            INSERT INTO Account (AccID, Password, Email, Active, AccName)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        result2 = qs.execute(query, (str(account), str(password), str(email), str(active), str(acc_name)))
+
+
+
 
 
 
