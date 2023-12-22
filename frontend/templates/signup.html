@@ -50,19 +50,27 @@
 
 <div class="container">
     
-    <h2>Login into your account</h2>
-    <form method="POST" action="{{ url_for('login')}}">
+    <h2>Sign up</h2>
+    <form method="POST" action="{{ url_for('signup')}}">
         <div class="form-group">
-            {{ loginForm.account.label }}
-            {{ loginForm.account(class="form-control  black-and-white") }}
+            {{ form.accountID.label }}
+            {{ form.accountID(class="form-control  black-and-white") }}
         </div>
         <div class="form-group">
-            {{ loginForm.password.label }}
-            {{ loginForm.password(class="form-control  black-and-white") }}
+            {{ form.password.label }}
+            {{ form.password(class="form-control  black-and-white") }}
+        </div>
+        <div class="form-group">
+            {{ form.name.label }}
+            {{ form.name(class="form-control  black-and-white") }}
+        </div>
+        <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email(class="form-control  black-and-white") }}
         </div>
 
-        <button type="submit" class="btn btn-primary login-button">Login</button>
-        <a href = '/signup' class = "btn btn-primary login-button"> Sign Up </a> 
+        <button type="submit" class="btn btn-primary login-button">Signup</button>
+        
     </form>
     {% if msg %}
         <div style = "margin-top: 18px"> {{msg}} </div>

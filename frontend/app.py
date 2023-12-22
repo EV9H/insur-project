@@ -60,7 +60,11 @@ class LoginForm(Form):
     account = StringField("Account")
     password = StringField("Password")
 
-
+class SignupForm(Form):
+    accountID = StringField("AccountID")
+    name = StringField("name")
+    password = StringField("Password")
+    email = StringField("Email")
 
 ########### AUTHENTICATIONS ###################
 def auth(account, password, role = "Customer"):
@@ -100,24 +104,51 @@ def logout():
 # front-end for sign-up: account password email Accname Active = 1
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    account = "test2"
-    password = "23456"
-    email = "abc@gmail.com"
-    acc_name = "Evan Huang"
-    active = 1
-    qs = QuerySender()
-    query = "SELECT AccID FROM Account WHERE AccID = %s"
-    result = qs.execute(query, params=(str(account)), auto_close=False)
-    if result:
-        print("AccID already exists")
-    else:
-        query = """
-            INSERT INTO Account (AccID, Password, Email, Active, AccName)
-            VALUES (%s, %s, %s, %s, %s)
-        """
-        result2 = qs.execute(query, (str(account), str(password), str(email), str(active), str(acc_name)))
+    # account = "test2"
+    # password = "23456"
+    # email = "abc@gmail.com"
+    # acc_name = "Evan Huang"
+    # active = 1
+    msg = ""
+    signupForm = SignupForm(request.form)
+    if request.method == 'POST' and signupForm.validate():
+        account = signupForm.accountID.data
+        password = signupForm.password.data
+        name = signupForm.name.data 
+        email = signupForm.email.data
+        active = 1
+        qs = QuerySender()
+        query = "SELECT AccID, Password FROM Account WHERE AccID = %s AND Password = %s"
+        result = qs.execute(query, params=(str(account), str(password)), auto_close = False)
+        if result:
+            msg = "Account already Exists!"
+        else:     
+            query = """
+                INSERT INTO Account (AccID, Password, Email, Active, AccName)
+                VALUES (%s, %s, %s, %s, %s)
+            """
+            result2 = qs.execute(query, (str(account), str(password), str(email), str(active), str(name)))
+            qs.close()
+            
+            # RETRAIN 
+            
+            
+            session["LOGGED_IN"] = False
+            return redirect("/login")
+        
+    # qs = QuerySender()
+    # query = "SELECT AccID FROM Account WHERE AccID = %s"
+    # result = qs.execute(query, params=(str(account)), auto_close=False)
+    # if result:
+    #     print("AccID already exists")
+    # else:
+    #     query = """
+    #         INSERT INTO Account (AccID, Password, Email, Active, AccName)
+    #         VALUES (%s, %s, %s, %s, %s)
+    #     """
+    #     result2 = qs.execute(query, (str(account), str(password), str(email), str(active), str(acc_name)))
 
-
+    return render_template('signup.html', form=signupForm, msg = msg)
 
 
 
