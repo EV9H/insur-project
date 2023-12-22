@@ -194,6 +194,7 @@ def purchase():
     if request.method == 'POST' and pForm.validate():
         plan = pForm.plan.data
         # amount = pForm.amount.data
+
         
         
     return render_template('purchase.html', pForm = pForm, quote = quote)
@@ -231,12 +232,34 @@ def my_products():
     else: 
         return redirect('/login')
 
+# frontend required
+@app.route('/customer', methods=['GET', 'POST'])
+def customer():
+    age = 55
+    gender = 1
+    income = 123123
+    health_rating = 20
+    married = 0
+
+    def get_appr(age1, gender1, income1, health_rating1, married1):
+        new_x = [(int(age1), int(gender1), float(income1), float(health_rating1), int(married1))]
+        model = get_knn()
+        result1 = model.predict(new_x)
+        return result1
+
+    result = get_appr(age, gender, income, health_rating, married)
+    msg = "Not a potential customer"
+    if result == 1:
+        msg = "Potential customer"
+    print(msg)
+
 ########### manage #####################
 @app.route('/manage', methods=['GET', 'POST'])
 def manage():
     
     
     return render_template('manage.html')
+
 
 
 
