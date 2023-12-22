@@ -90,6 +90,7 @@ def login():
         result = qs.execute(query, params=(str(account), str(password)))
         if result:
             session["LOGGED_IN"] = True
+            session['AccID'] = account
             return redirect("/")
         else:
             msg = "Wrong credentials."
@@ -98,7 +99,7 @@ def login():
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session.pop("LOGGED_IN", None)
-    
+    session.pop("AccID", None)
     return redirect("/")
 
 # front-end for sign-up: account password email Accname Active = 1
@@ -173,23 +174,7 @@ def get_quote():
 
 @app.route('/purchase', methods=['GET', 'POST'])
 def purchase():
-    # regForm = RegisterForm(request.form)
     quote = session['quote']
-        
-    # if request.method == 'POST' and regForm.validate():
-    #     AccID = regForm.AccID.data
-    #     password = regForm.password.data
-    #     email = regForm.email.data
-    #     name = regForm.name.data 
-        
-        
-    #     age = regForm.age.data
-    #     gender = regForm.gender.data
-    #     income = regForm.income.data
-    #     health_rating = regForm.health_rating.data
-    #     nChildren = regForm.nChildren.data
-    #     married = regForm.married.data
-    #     purchased = regForm.purchased.data
     
     pForm = PurchaseForm(request.form)
     pForm.plan.data = 'planA'
@@ -211,19 +196,33 @@ def purchase():
 @app.route('/my_products', methods=['GET', 'POST'])
 def my_products():
     products = []
-    
-    for i in range(10):
-        name = "A"+str(i)
-        price = str(10000+i)
+    if session['AccID']:    
+        userID = session['AccID']
+        qs = QuerySender()
+        q = '''SELECT CID, Plan_Name, Status, Amount, Assc_Ssn FROM Contract 
+            INNER JOIN Account ON Account.AccID = Contract.AccID
+            WHERE Contract.AccID = %s
+        '''
+        data = qs.execute(q, params=(userID))
         
-        description = "THIS IS PRODUCT A " + str(i)
-        products.append({
-            'name': name,
-            'price': price,
-            'description': description
-        })
-    return render_template('my_products.html', products = products)
-
+        print(data)
+        for i in range(len(data)):
+            CID = data[i][0]
+            name = data[i][1]
+            status = data[i][2]
+            amount = data[i][3]
+            assc = data[i][4]
+                        
+            products.append({
+                'CID': CID,
+                'name': name,
+                'payment': amount,
+                'status':status,
+                'assc': assc
+            })
+        return render_template('my_products.html', products = products)
+    else: 
+        return redirect('/login')
 
 ########### manage #####################
 @app.route('/manage', methods=['GET', 'POST'])

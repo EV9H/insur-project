@@ -203,13 +203,13 @@ def add_contract():
 # cursor.execute("""DELETE FROM Contract""")
 # cursor.execute("""SELECT CID, Status FROM Contract WHERE Status = 1 """)
 
-q = """
-    SELECT age, gender, income, health_rating, married, C.Status FROM Contract C
-    INNER JOIN Account_owner ON Account_owner.AccID = C.AccID
-    INNER JOIN Customer ON Customer.Ssn = Account_owner.Ssn 
-"""
-cursor.execute(q)
-print(cursor.fetchall())
+# q = """
+#     SELECT age, gender, income, health_rating, married, C.Status FROM Contract C
+#     INNER JOIN Account_owner ON Account_owner.AccID = C.AccID
+#     INNER JOIN Customer ON Customer.Ssn = Account_owner.Ssn 
+# """
+# cursor.execute(q)
+# print(cursor.fetchall())
 
 
 # cursor.execute("SELECT * FROM Plan")
@@ -222,6 +222,18 @@ print(cursor.fetchall())
 # cursor.execute(q)
 # results = cursor.fetchall()
 # print(results)
+
+q = '''
+    SELECT AccID FROM Contract
+'''
+
+q = '''SELECT CID, Plan_Name, Status, Amount, Assc_Ssn FROM Contract 
+            INNER JOIN Account ON Account.AccID = Contract.AccID
+            WHERE Contract.AccID = 132059
+        '''
+cursor.execute(q)
+print(cursor.fetchall())
+
 db.commit()
 cursor.close()
 db.close()
