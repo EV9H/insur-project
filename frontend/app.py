@@ -104,11 +104,6 @@ def logout():
 # front-end for sign-up: account password email Accname Active = 1
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    # account = "test2"
-    # password = "23456"
-    # email = "abc@gmail.com"
-    # acc_name = "Evan Huang"
-    # active = 1
     msg = ""
     signupForm = SignupForm(request.form)
     if request.method == 'POST' and signupForm.validate():
