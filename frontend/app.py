@@ -116,9 +116,7 @@ def signup():
             VALUES (%s, %s, %s, %s, %s)
         """
         result2 = qs.execute(query, (str(account), str(password), str(email), str(active), str(acc_name)))
-
-
-
+    qs.close()
 
 
 
