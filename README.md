@@ -1,8 +1,8 @@
-JZIB Insurance Full Stack Project 
+## JZIB Insurance Full Stack Project 
 - Technologies used: Flask, bootstrap, AWS, MySQL... 
 
 
-- TO START WEB PAGE
+### To Run: 
 1. Enter virtual environment 
     In terminal: 
     - cd frontend 
