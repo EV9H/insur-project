@@ -3,11 +3,18 @@ from flask_bootstrap import Bootstrap
 from wtforms import Form, StringField, IntegerField, SelectField, BooleanField
 import sys
 
+
 app = Flask(__name__)
 app.debug = True
 app.secret_key = "SECRETKEY"
 # app.config['SECRET_KEY'] = 'secret'
 bootstrap = Bootstrap(app)
+
+import os
+sys.path.insert(0, os.path.abspath('../'))
+from backend.api import *
+
+
 
 
 '''
