@@ -306,8 +306,7 @@ def assess():
             result1 = model.predict(new_x)
             return result1
 
-        result = get_appr(age, gender, income, health_rating, married)
-        
+        result = get_appr(age, gender, income, health_rating, married)[0]
         if result == 1:
             msg = "Potential customer"
         else: 
