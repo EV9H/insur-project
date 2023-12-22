@@ -1,0 +1,81 @@
+{% extends 'bootstrap/base.html' %}
+{% block title %}JZIB Insurance Company{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+        .navbar-item {
+            display: flex;
+        }
+
+        .  {
+            margin-left: auto;
+        }
+        a, a:hover {
+            text-decoration: none;
+            color:white;
+        }
+        p{
+            font-size: 18px;
+        }
+        
+        #header{
+            border-style: solid;
+            border-color: white; 
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        
+        .login-button{
+            border-style: solid;
+            border-color: white;
+            background: black;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<nav class="navbar">
+    <div class="container " style="">
+        <a href = "/"> <h1 class = "text-center" id = "header"> JZIB Insurance</h1></a>
+    </div>
+
+    
+</nav>
+<div class="container" style="">
+    <h2 class = 'text-center'> Auto-Retrain Machine Learning Potential Customer Assessor</h2>
+    <p style = "padding-top:50px;font-family: Arial; font-size: 18px;  "> Our machine learning function is a powerful tool that helps us identify the most promising leads for our business. It uses a <b> K-nearest neighbors (KNN) model</b>, a supervised learning algorithm that finds the closest matches to a new input based on a similarity measure. By using a large and diverse dataset of our past customers, the function can accurately predict whether a potential customer is likely to close a deal with us or not. This way, we can focus our efforts on the most relevant prospects and avoid wasting time and resources on low-quality leads. Our machine learning function improves our business efficiency and hugely reduces sales related costs.</p>
+    <form method="POST" action="{{ url_for('assess')}}" style = "padding-top: 100px">
+        <div class="form-group">
+            {{ form.age.label }}
+            {{ form.age(class="form-control  black-and-white") }}
+        </div>
+        <div class="form-group">
+            {{ form.gender.label }}
+            {{ form.gender(class="form-control  black-and-white") }}
+        </div>
+        <div class="form-group">
+            {{ form.income.label }}
+            {{ form.income(class="form-control  black-and-white") }}
+        </div>
+        <div class="form-group">
+            {{ form.health_rating.label }}
+            {{ form.health_rating(class="form-control  black-and-white") }}
+        </div>
+        <div class="form-group">
+            {{ form.married.label }}
+            {{ form.married(class="form-check-input  black-and-white") }}
+        </div>
+
+        <button type="submit" class="btn btn-success login-button btn-lg btn-block">Evaluate Customer Potential</button>
+        <h3 class = "text-center login-button" style = "margin-top: 100px; padding: 100px"> {{msg}} </h3>
+    </form>
+    
+
+</div>
+{% endblock %}

@@ -30,10 +30,10 @@ def index():
 
 
 class QuoteForm(Form):
-    age = IntegerField('Age')
+    age = IntegerField('Age (1-100)')
     gender = SelectField('Gender', choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')])
-    income = IntegerField('Income')
-    health_rating = IntegerField('Health Rating')
+    income = IntegerField('Annual Income (20,000$-200,000$)')
+    health_rating = IntegerField('Health Rating (1-100)')
     nChildren = IntegerField('# of Children')
     married = BooleanField('Married')
     purchased = BooleanField('Purchased Before?')
@@ -62,10 +62,18 @@ class LoginForm(Form):
 
 class SignupForm(Form):
     accountID = StringField("AccountID")
-    name = StringField("name")
+    name = StringField("Name")
     password = StringField("Password")
     email = StringField("Email")
     ssn = StringField("Ssn")
+
+class AssessmentForm(Form):
+    age = StringField("Age (1-100)")
+    gender = SelectField('Gender', choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')])
+    income = IntegerField('Income (20000-200000)')
+    health_rating = IntegerField('Health Rating(1-100)')
+    married = BooleanField('Married')
+    purchased = BooleanField('Purchased Before?')
 
 ########### AUTHENTICATIONS ###################
 def auth(account, password, role = "Customer"):
@@ -194,11 +202,6 @@ def purchase():
     msg = ''
     if request.method == 'POST' and pForm.validate():
         plan = pForm.plan.data
-<<<<<<< Updated upstream
-        # amount = pForm.amount.data
-
-=======
-        app.logger.debug(plan)
         planname = ""
         if plan == "planA":
             planname = "Plan A"
@@ -236,7 +239,6 @@ def purchase():
             VALUES(%s, %s,%s,%s,%s,%s)
         """
         cursor.execute(q, [CID, quote, 1, '111-11-1111', planname, userID])
->>>>>>> Stashed changes
         
         
         cursor.close()
@@ -279,32 +281,41 @@ def my_products():
         return redirect('/login')
 
 # frontend required
-@app.route('/customer', methods=['GET', 'POST'])
-def customer():
-    age = 55
-    gender = 1
-    income = 123123
-    health_rating = 20
-    married = 0
-
-    def get_appr(age1, gender1, income1, health_rating1, married1):
-        new_x = [(int(age1), int(gender1), float(income1), float(health_rating1), int(married1))]
-        model = get_knn()
-        result1 = model.predict(new_x)
-        return result1
-
-    result = get_appr(age, gender, income, health_rating, married)
-    msg = "Not a potential customer"
-    if result == 1:
-        msg = "Potential customer"
-    print(msg)
-
-########### manage #####################
-@app.route('/manage', methods=['GET', 'POST'])
-def manage():
+@app.route('/assess', methods=['GET', 'POST'])
+def assess():
+    form = AssessmentForm(request.form)
     
+    msg = 'Fill all related customer info and wait for Result ...'
+    if request.method == 'POST' and form.validate():
+        
+        # age = 55
+        # gender = 1
+        # income = 123123
+        # health_rating = 20
+        # married = 0
+
+        age = form.age.data
+        gender = form.gender.data
+        income = form.income.data
+        health_rating = form.health_rating.data
+        married = form.married.data
+        gender = 1 if gender == 'male' else 0
+        def get_appr(age1, gender1, income1, health_rating1, married1):
+            new_x = [(int(age1), int(gender1), float(income1), float(health_rating1), int(married1))]
+            model = get_knn()
+            result1 = model.predict(new_x)
+            return result1
+
+        result = get_appr(age, gender, income, health_rating, married)
+        
+        if result == 1:
+            msg = "Potential customer"
+        else: 
+            msg = "Not a potential customer"
+        
     
-    return render_template('manage.html')
+    return render_template('assess.html', msg = msg, form = form)
+
 
 
 
