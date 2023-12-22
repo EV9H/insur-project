@@ -47,3 +47,6 @@ probabilities = model.predict_proba(data_test)[:, 1]
 rounded_probabilities = [round(prob, 3) for prob in probabilities]
 print(rounded_probabilities)
 
+def get_reg():
+    reg = joblib.load('regression.joblib')
+    return reg

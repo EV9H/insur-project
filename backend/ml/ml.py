@@ -44,6 +44,6 @@ prediction = knn.predict(data_test)
 print(confusion_matrix(type_test, prediction))
 print(classification_report(type_test, prediction))
 
-
-
-
+def get_knn():
+    knn1 = joblib.load('knn.joblib')
+    return knn1

@@ -156,7 +156,10 @@ def get_quote():
     quote = ''
     if request.method == 'POST' and form.validate():
         age = form.age.data
-        gender = form.gender.data
+        pre_gender = form.gender.data
+        gender = 0
+        if pre_gender == "male":
+            gender = 1
         income = form.income.data
         health_rating = form.health_rating.data
         nChildren = form.nChildren.data
@@ -164,10 +167,14 @@ def get_quote():
         purchased = form.purchased.data
 
         # Calculate quote based on input fields
-        def calculate_quote( age, gender, income, health_rating, nChildren, married, purchased):
-            return 100 / health_rating * 5000; 
+        def calculate_premium(age, gender, income, health_rating, married):
+            model = get_reg()
+            new_x = [(int(age), int(gender), float(income), float(health_rating), int(married))]
+            p = model.predict_proba(new_x)[:, 1][0]
+            r = p * 100000
+            return r
 
-        quote = int(calculate_quote(age, gender, income, health_rating, nChildren, married, purchased))
+        quote = int(calculate_premium(age, gender, income, health_rating, married)/12)
         session['quote'] = quote
     return render_template('get_quote.html', form=form, quote = quote)
 
